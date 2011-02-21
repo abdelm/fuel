@@ -27,7 +27,8 @@ Fuel\Core\Autoloader::register();
 Fuel::init(include(APPPATH.'config/config.php'));
 
 // Generate the request, execute it and send the output.
-Request::factory()->execute()->send_headers()->output();
+$response = Request::factory()->execute()->response();
+$response->send(true);
 
 Event::shutdown();
 Fuel::finish();

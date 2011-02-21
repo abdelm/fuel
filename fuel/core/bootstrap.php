@@ -132,6 +132,7 @@ Fuel\Core\Autoloader::add_classes(array(
 	'Fuel\\Core\\Output'					=> COREPATH.'classes/output.php',
 	'Fuel\\Core\\Pagination'				=> COREPATH.'classes/pagination.php',
 	'Fuel\\Core\\Profiler'					=> COREPATH.'classes/profiler.php',
+	'Fuel\\Core\\Respone'					=> COREPATH.'classes/response.php',
 	'Fuel\\Core\\Request'					=> COREPATH.'classes/request.php',
 	'Fuel\\Core\\Route'						=> COREPATH.'classes/route.php',
 	'Fuel\\Core\\Security'					=> COREPATH.'classes/security.php',

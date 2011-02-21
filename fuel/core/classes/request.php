@@ -111,11 +111,17 @@ class Request {
 	{
 		logger(Fuel::L_INFO, 'Called', __METHOD__);
 
-		\Output::$status = 404;
-
 		if (\Config::get('routes.404') === null)
 		{
-			static::active()->output = \View::factory('404');
+			$response = new \Response(\View::factory('404'), 404);
+			
+			if ($return)
+			{
+				return $response;
+			}
+
+			$response->send(true);
+			exit();
 		}
 		else
 		{
@@ -137,7 +143,7 @@ class Request {
 						$controller->before();
 					}
 
-					$controller->{$method}();
+					$response = $controller->{$method}();
 
 					// Call the after method if it exists
 					if (method_exists($controller, 'after'))
@@ -148,11 +154,11 @@ class Request {
 					// Get the controller's output
 					if ($return)
 					{
-						return $controller->output;
+						return $response;
 					}
 
-					\Output::send_headers();
-					exit($controller->output);
+					$response->send(true);
+					exit();
 				}
 				else
 				{
@@ -169,7 +175,7 @@ class Request {
 	/**
 	 * @var	string	Holds the response of the request.
 	 */
-	public $output = NULL;
+	public $response = null;
 
 	/**
 	 * @var	object	The request's URI object
@@ -297,10 +303,12 @@ class Request {
 			// 404 if it's still not found
 			if ( ! class_exists($class))
 			{
-				$this->output = static::show_404(true);
+				$this->response = static::show_404(true);
 				return $this;
 			}
 		}
+
+		// Let's get to gettin!!!!
 
 		logger(Fuel::L_INFO, 'Loading controller '.$class, __METHOD__);
 		$this->controller_instance = $controller = new $class($this);
@@ -325,7 +333,7 @@ class Request {
 			}
 
 			logger(Fuel::L_INFO, 'Calling '.$class.'::'.$method, __METHOD__);
-			call_user_func_array(array($controller, $method), $this->method_params);
+			$response = call_user_func_array(array($controller, $method), $this->method_params);
 
 			// Call the after method if it exists
 			if (method_exists($controller, 'after'))
@@ -335,26 +343,19 @@ class Request {
 			}
 
 			// Get the controller's output
-			$this->output =& $controller->output;
+			$this->response =& $response;
 		}
 		else
 		{
-			$this->output = static::show_404(true);
+			$this->response = static::show_404(true);
 		}
 
 		return $this;
 	}
 
-	public function send_headers()
+	public function response()
 	{
-		\Output::send_headers();
-
-		return $this;
-	}
-
-	public function output()
-	{
-		echo $this->output;
+		return $this->response;
 	}
 
 	/**
@@ -372,7 +373,7 @@ class Request {
 	 */
 	public function __toString()
 	{
-		return (string) $this->output;
+		return (string) $this->response;
 	}
 }
 

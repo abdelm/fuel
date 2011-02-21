@@ -24,11 +24,6 @@ class Controller {
 	public $request;
 
 	/**
-	 * @var	string	Holds the output of the controller
-	 */
-	public $output = '';
-
-	/**
 	 * Sets the controller request object.
 	 *
 	 * @access	public
@@ -83,16 +78,6 @@ class Controller {
 	public function params()
 	{
 		return $this->request->named_params;
-	}
-
-	public function render($view, $data = array(), $return = false)
-	{
-		if ( ! $return)
-		{
-			$this->output .= \View::factory($view, $data);
-			return;
-		}
-		return \View::factory($view, $data);
 	}
 }
 
